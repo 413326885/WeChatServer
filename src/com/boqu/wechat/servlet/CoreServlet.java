@@ -34,6 +34,7 @@ public class CoreServlet extends HttpServlet {
         String filePath = prefix + file;
         PropertyConfigurator.configure(filePath);
     }
+
     /**
      * 确认请求来自微信服务器
      */
@@ -60,14 +61,45 @@ public class CoreServlet extends HttpServlet {
             String state = request.getParameter("state");
             OpenID openId = WeixinUtil.getOpenIdAndAccessToken(Constant.appId,
                     Constant.appSecret, code);
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            String source = "wechat";
+            // String timestamp = String.valueOf(System.currentTimeMillis());
+            // String source = "wechat";
             switch (state) {
-            case "11":
+            // case "21": {
+            // String redirectUrl = Constant.serverUrl + "/wechat/register.html"
+            // + "?openId=" + openId.getOpenId() + "&accessToken=" +
+            // openId.getAccessToken();
+            // response.sendRedirect(redirectUrl);
+            // break;
+            // }
+            case "22": {
+                String redirectUrl = Constant.serverUrl
+                        + "/wechat/subjects.html" + "?openId="
+                        + openId.getOpenId() + "&accessToken="
+                        + openId.getAccessToken();
+                response.sendRedirect(redirectUrl);
+                break;
+            }
+            case "31": {
+                String redirectUrl = Constant.serverUrl
+                        + "/wechat/user_center.html" + "?openId="
+                        + openId.getOpenId() + "&accessToken="
+                        + openId.getAccessToken();
+                response.sendRedirect(redirectUrl);
+                break;
+            }
+            case "32": {
+                String redirectUrl = Constant.serverUrl
+                        + "/wechat/bind_unbind.html" + "?openId="
+                        + openId.getOpenId() + "&accessToken="
+                        + openId.getAccessToken();
+                response.sendRedirect(redirectUrl);
+                break;
+            }
             default: {
-                String redirectUrl = "http://182.92.222.185:3000/cubicdetail.html"
-                        + "?openid=" + openId + "&timestamp=" + timestamp
-                        + "&source=" + source;
+                String redirectUrl = Constant.serverUrl
+                        + "/wechat/subjects.html" + "?openId="
+                        + openId.getOpenId() + "&accessToken="
+                        + openId.getAccessToken();
                 response.sendRedirect(redirectUrl);
                 break;
             }
@@ -83,10 +115,22 @@ public class CoreServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         // 将请求、响应的编码均设置为UTF-8（防止中文乱码）
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
 
-        // 调用核心业务类接收消息、处理消息
-        String respMessage = CoreService.processRequest(request);
+        String respMessage;
+        String jssdk = request.getParameter("jssdk");
+//        System.out.println("jssdk=" + jssdk);
+
+        if (jssdk != null && jssdk.length() != 0
+                && "wechatproject".equalsIgnoreCase(jssdk)) {
+            response.setCharacterEncoding("UTF-8");
+            respMessage = CoreService.processJssdk(request);
+//            System.out.println("jssdk");
+        } else {
+            // 调用核心业务类接收消息、处理消息(微信发送来的图文消息)
+            response.setCharacterEncoding("UTF-8");
+            respMessage = CoreService.processRequest(request);
+//            System.out.println("xml");
+        }
 
         // 响应消息
         PrintWriter out = response.getWriter();

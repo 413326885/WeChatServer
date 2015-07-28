@@ -21,13 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.boqu.wechat.pojo.AccessToken;
+import com.boqu.wechat.pojo.JsApiTicket;
 import com.boqu.wechat.pojo.Menu;
 import com.boqu.wechat.pojo.OpenID;
 
 /**
  * 公众平台通用接口工具类
  * 
- * @date 2013-08-09
  */
 public class WeixinUtil {
 
@@ -48,8 +48,10 @@ public class WeixinUtil {
 
     // 获取openid的接口地址
     public final static String openid_url = "https://api.weixin.qq.com/sns/"
-            + "oauth2/access_token?appid=APPID&secret=SECRET"
-            + "&code=CODE&grant_type=authorization_code";
+            + "oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
+
+    // 获取jsapi_ticket的接口地址
+    public final static String jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
 
     /**
      * 获取access_token
@@ -84,6 +86,37 @@ public class WeixinUtil {
     }
 
     /**
+     * 获取access_token
+     * 
+     * @param appid
+     *            凭证
+     * @param appsecret
+     *            密钥
+     * @return
+     */
+    public static JsApiTicket getJsApiTicket(String accesstoken) {
+        JsApiTicket jsApiTicket = null;
+
+        String requestUrl = jsapi_ticket_url.replace("ACCESS_TOKEN", accesstoken);
+        JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
+        // 如果请求成功
+        if (null != jsonObject) {
+            try {
+                jsApiTicket = new JsApiTicket();
+                jsApiTicket.setTicket(jsonObject.getString("ticket"));
+                jsApiTicket.setExpiresIn(jsonObject.getInt("expires_in"));
+            } catch (JSONException e) {
+                jsApiTicket = null;
+                // 获取token失败
+                log.error("获取token失败 errcode:{} errmsg:{}",
+                        Integer.valueOf(jsonObject.getInt("errcode")),
+                        jsonObject.getString("errmsg"));
+            }
+        }
+        return jsApiTicket;
+    }
+
+    /**
      * 获取openid
      * 
      * @param appid
@@ -97,7 +130,7 @@ public class WeixinUtil {
         OpenID openID = null;
 
         String requestUrl = openid_url.replace("APPID", appid)
-                .replace("APPSECRET", appsecret).replace("CODE", code);
+                .replace("SECRET", appsecret).replace("CODE", code);
         JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
 
         // 如果请求成功
@@ -106,11 +139,11 @@ public class WeixinUtil {
                 openID = new OpenID();
                 openID.setAccessToken(jsonObject.getString("access_token"));
                 openID.setExpiresIn(jsonObject.getInt("expires_in"));
-                openID.setOpenId(jsonObject.getString("openif"));
+                openID.setOpenId(jsonObject.getString("openid"));
                 openID.setRefreshToken(jsonObject.getString("refresh_token"));
-                openID.setUnionId(jsonObject.getString("unionid"));
             } catch (JSONException e) {
                 openID = null;
+                e.printStackTrace();
                 // 获取token失败
                 log.error("获取token失败 errcode:{} errmsg:{}",
                         Integer.valueOf(jsonObject.getInt("errcode")),
@@ -235,11 +268,11 @@ public class WeixinUtil {
                 .replace("REDIRECT_URI", redirect).replace("SCOPE", scope)
                 .replace("STATE", state);
 
-//        try {
-//            requestUrl = URLEncoder.encode(requestUrl, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
+        // try {
+        // requestUrl = URLEncoder.encode(requestUrl, "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+        // e.printStackTrace();
+        // }
         return requestUrl;
     }
 }

@@ -18,7 +18,7 @@ public class MenuManager {
     private static Logger log = LoggerFactory.getLogger(MenuManager.class);
 
     // 获取code回调地址
-    private static String redirect_uri = "http://121.40.137.8/WeChatServer/coreServlet";
+    private static String redirect_uri = "http://wechattest.jia16.com/WeChatServer/coreServlet";
 
     public static void main(String[] args) {
 
@@ -47,63 +47,85 @@ public class MenuManager {
      */
     private static Menu getMenu() {
 
-        String btn11_uri = WeixinUtil.getCodeUrl(Constant.appId, redirect_uri,
-                "snsapi_base", "11");
+        // 联系我们
+        String url11 = "http://mp.weixin.qq.com/s?__biz=MzA4MjgzMzE3NQ==&mid=209271248&idx=1&sn=611c37f7d349dded28b485fc72338a6c#rd";
+        // 平台简介
+        String url12 = "http://mp.weixin.qq.com/s?__biz=MzA4MjgzMzE3NQ==&mid=209271983&idx=1&sn=8e7caf3f530e41c50a6b38ac811fa710#rd";
+        // 帮助中心
+        String url13 = "http://mp.weixin.qq.com/s?__biz=MzA4MjgzMzE3NQ==&mid=209272156&idx=1&sn=91f2e119bd35bee851821d264daa8f4a#rd";
+        // 近期活动
+        String url21 = "http://mp.weixin.qq.com/s?__biz=MzA4MjgzMzE3NQ==&mid=209363322&idx=1&sn=4084dce31ff63f42d9e53bc082e98338#rd";
+
+        String url22 = WeixinUtil.getCodeUrl(Constant.appId, redirect_uri,
+                "snsapi_base", "22");
+        String url31 = WeixinUtil.getCodeUrl(Constant.appId, redirect_uri,
+                "snsapi_base", "31");
+        String url32 = WeixinUtil.getCodeUrl(Constant.appId, redirect_uri,
+                "snsapi_base", "32");
+
+        // CommonButton btn11 = new CommonButton();
+        // btn11.setName("联系我们");
+        // btn11.setType("click");
+        // btn11.setKey("11");
+        //
+        // CommonButton btn12 = new CommonButton();
+        // btn12.setName("平台简介");
+        // btn12.setType("click");
+        // btn12.setKey("12");
+        //
+        // CommonButton btn13 = new CommonButton();
+        // btn13.setName("帮助中心");
+        // btn13.setType("click");
+        // btn13.setKey("13");
 
         ViewButton btn11 = new ViewButton();
-        btn11.setName("注册");
+        btn11.setName("联系我们");
         btn11.setType("view");
-        btn11.setUrl(btn11_uri);
+        btn11.setUrl(url11);
 
         ViewButton btn12 = new ViewButton();
-        btn12.setName("绑定");
+        btn12.setName("平台简介");
         btn12.setType("view");
-        btn12.setUrl("http://182.92.222.185:3000/login.html");
+        btn12.setUrl(url12);
 
         ViewButton btn13 = new ViewButton();
-        btn13.setName("个人中心");
+        btn13.setName("帮助中心");
         btn13.setType("view");
-        btn13.setUrl("http://182.92.222.185:3000/investerdetail.html");
+        btn13.setUrl(url13);
 
         ViewButton btn21 = new ViewButton();
-        btn21.setName("充值");
+        btn21.setName("近期活动");
         btn21.setType("view");
-        btn21.setUrl("http://182.92.222.185:3000/cubic.html");
+        btn21.setUrl(url21);
 
         ViewButton btn22 = new ViewButton();
-        btn22.setName("取现");
+        btn22.setName("我要投资");
         btn22.setType("view");
-        btn22.setUrl("http://182.92.222.185:3000/cubicdetail.html");
+        btn22.setUrl(url22);
 
         ViewButton btn31 = new ViewButton();
-        btn31.setName("联系我们");
+        btn31.setName("个人中心");
         btn31.setType("view");
-        btn31.setUrl("http://182.92.222.185:3000/cubicdetail.html");
+        btn31.setUrl(url31);
 
-        CommonButton btn32 = new CommonButton();
-        btn32.setName("使用帮助");
-        btn32.setType("click");
-        btn32.setKey("32");
+        ViewButton btn32 = new ViewButton();
+        btn32.setName("微信绑定");
+        btn32.setType("view");
+        btn32.setUrl(url32);
 
         ComplexButton mainBtn1 = new ComplexButton();
-        mainBtn1.setName("开户");
+        mainBtn1.setName("嘉石榴");
         mainBtn1.setSub_button(new Button[] { btn11, btn12, btn13 });
 
         ComplexButton mainBtn2 = new ComplexButton();
-        mainBtn2.setName("投资");
+        mainBtn2.setName("要投资");
+//        mainBtn2.setSub_button(new Button[] { btn21});
         mainBtn2.setSub_button(new Button[] { btn21, btn22 });
 
         ComplexButton mainBtn3 = new ComplexButton();
-        mainBtn3.setName("更多");
+        mainBtn3.setName("个人中心");
         mainBtn3.setSub_button(new Button[] { btn31, btn32 });
 
-        /**
-         * 这是公众号小嘉嘉目前的菜单结构，每个一级菜单都有二级菜单项<br>
-         * 
-         * 在某个一级菜单下没有二级菜单的情况，menu该如何定义呢？<br>
-         * 比如，第三个一级菜单项不是“更多体验”，而直接是“幽默笑话”，那么menu应该这样定义：<br>
-         * menu.setButton(new Button[] { mainBtn1, mainBtn2, btn33 });
-         */
         Menu menu = new Menu();
         menu.setButton(new Button[] { mainBtn1, mainBtn2, mainBtn3 });
 
